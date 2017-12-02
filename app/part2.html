@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Part B</title>
+	<?php header('Access-Control-Allow-Origin: *'); ?>
+	<!--Custom css-->
+	<link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+       <!--Jquery js-->
+    <script type="text/javascript" src="../assets/js/jquery.3.1.js"></script>
+        <!--popper js -->
+    <script type="text/javascript" src="../assets/js/popper.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        ParseData();
+        var data = []
+        function ParseData() {
+            var parsedResponse = []
+            $.get("https://api.mcmakler.de/v1/advertisements", function (res, status) {
+                data = res.data.splice(0, 10)
+                data.map(function (value) {
+                    address = value.realestateSummary.address
+                    temp = {
+                        title: value.title,
+                        address: address.postalCode + ' ' + address.street + ' | ' + address.city,
+                        price: '€' + value.advertisementPrice.sellPrice,
+                        image: value.advertisementAssets[0].advertisementThumbnails.inventory_m.url,
+                        zimmer: value.realestateSummary.numberOfRooms,
+                        availibity: value.realestateSummary.space
+                    }
+                    col = $("<div class='col_style part-2-main'/>")
+                        .appendTo($("<div class='width-medium-4 width-small-12 width-extrasmall-12 margin_top' style='margin-top: 1%;' />")
+                        .appendTo($('#in')));
+                    img = ($("<div class='imagewrap'/>")
+                        .appendTo(col));   
+                    //Use img-responsive class for image responsiveness in all devices
+                    ($("<img src='" + value.advertisementAssets[0].advertisementThumbnails.inventory_m.url + "' class='img-responsive'/>")
+                        .appendTo(img));
+                    ($("<input type='button' class='custom-button btn btn-default' value='Mieten' />")
+                        .appendTo(img)
+                        .appendTo(col));
+                    //Use h4_style class to style heading
+                    ($("<h4 class='h4-custom' style='margin-bottom: 5%;'>" + value.title + "</h4>")
+                        .appendTo($("<div class='width-medium-12' />")
+                        .appendTo(col)));
+                    //Use p_style class to style paragraph also use text-muted for muted text like disable text
+                    ($("<p class='text-muted p_style'>" + address.postalCode + " " + address.city + " | " + address.street + "</p>")
+                        .appendTo($("<div class='width-medium-12'/>")
+                        .appendTo(col)));
+
+                    row = ($("<div class='row'>")
+                        .appendTo(col));
+
+                    ($("<h4 class='h4-custom-sub'>" + value.advertisementPrice.sellPrice + " €</h4>")
+                        .appendTo($("<div class='width-medium-5'/>")
+                        .appendTo(row)));
+
+                    ($("<h4 class='text-muted h4-custom-sub'>" + value.realestateSummary.numberOfRooms + " Zimmer  | " + value.realestateSummary.space.toFixed(1) + " m<sup>2</sup>"+ "</h4>")
+                        .appendTo($("<div class='width-medium-7'/>")
+                        .appendTo(row)));
+                    parsedResponse.push(temp)
+                })
+            });
+        }
+    });
+    </script>
+</head>
+<body>	
+    <!--Use container-fluid class to get max width-->
+    <div class="container-fluid" style="margin-top:2%;">
+	   <!--Use row class to get divs in single row-->
+    	<div id="in" class="row">
+		</div>
+	</div>
+    <div class="container-fluid">
+    </div>
+</body>
+</html>
